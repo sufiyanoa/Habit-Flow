@@ -28,7 +28,7 @@ const HabitForm = ({ addHabit }) => {
         onChange={(e) => setInput(e.target.value)}
       />
       <button
-        className="border p-1 px-2 rounded ml-8 my-3 bg-blue-400"
+        className="border  p-1 rounded ml-3 my-3 bg-blue-400"
         type="submit"
       >
         Add Habit
