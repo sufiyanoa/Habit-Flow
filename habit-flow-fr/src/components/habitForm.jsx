@@ -3,19 +3,31 @@ import { useState } from "react";
 const HabitForm = ({ addHabit }) => {
   const [input, setInput] = useState("");
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
+    const title = input.trim();
 
-    if (input.trim() === "") {
-      return;
+    if (!title) return;
+
+    try {
+      const response = await fetch("http://localhost:5000/api/habits", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          title,
+        }),
+      });
+      if (!response.ok) throw new Error("Failed to create habit");
+
+      const data = await response.json();
+
+      addHabit(data.habit);
+      setInput("");
+    } catch (error) {
+      console.log(error);
     }
-    const newHabit = {
-      id: Date.now(),
-      title: input,
-      completed: false,
-    };
-    addHabit(newHabit);
-    setInput("");
   }
 
   return (

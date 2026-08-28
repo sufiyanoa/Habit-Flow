@@ -8,13 +8,13 @@ const HabitCard = ({ habit, deleteBtn, completedToggle }) => {
             ? "border px-1 rounded bg-green-500"
             : "border px-1 rounded bg-orange-400"
         }
-        onClick={() => completedToggle(habit.id)}
+        onClick={() => completedToggle(habit._id)}
       >
         {habit.completed ? "Completed" : "Pending"}
       </button>
 
       <button
-        onClick={() => deleteBtn(habit.id)}
+        onClick={() => deleteBtn(habit._id)}
         className="border px-1 rounded bg-red-500"
       >
         Delete

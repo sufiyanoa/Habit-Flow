@@ -3,44 +3,72 @@ import HabitFooter from "./components/habitFooter";
 import HabitForm from "./components/habitForm";
 import HabitList from "./components/habitList";
 import Header from "./components/header";
-import dummyData from "./data/habits";
 import Stats from "./components/stats";
 
 function App() {
-  const [habits, setHabits] = useState(() => {
-    const data = localStorage.getItem("Habits");
-    if (data) {
-      return JSON.parse(data);
-    }
-    return dummyData;
-  });
+  const [habits, setHabits] = useState([]);
 
   useEffect(() => {
-    localStorage.setItem("Habits", JSON.stringify(habits));
-  });
+    async function loadHabits() {
+      try {
+        const response = await fetch("http://localhost:5000/api/habits");
+        if (!response.ok) throw new Error("Failed to fetch habits");
+
+        const data = await response.json();
+        setHabits(data.habits);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    loadHabits();
+  }, []);
 
   function addHabit(newHabit) {
-    setHabits([...habits, newHabit]);
-    console.log(habits);
+    setHabits((previousHabits) => [...previousHabits, newHabit]);
   }
 
-  function completedToggle(id) {
-    const updateHabit = habits.map((habit) => {
-      if (habit.id === id) {
-        return {
-          ...habit,
+  async function completedToggle(id) {
+    const habit = habits.find((habit) => habit._id === id);
+
+    if (!habit) return;
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/habits/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
           completed: !habit.completed,
-        };
-      }
-      return habit;
-    });
+        }),
+      });
+      if (!response.ok) throw new Error("Failed to update habit");
 
-    setHabits(updateHabit);
+      const data = await response.json();
+
+      setHabits((preveHabit) =>
+        preveHabit.map((habit) => (habit._id === id ? data.habit : habit)),
+      );
+    } catch (error) {
+      console.log(error);
+    }
   }
 
-  function deleteBtn(id) {
-    const updateHabit = habits.filter((habit) => habit.id != id);
-    setHabits(updateHabit);
+  async function deleteBtn(id) {
+    try {
+      const response = await fetch(`http://localhost:5000/api/habits/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) throw new Error("Failed to delete habit");
+
+      setHabits((previousHabits) =>
+        previousHabits.filter((habit) => habit._id !== id),
+      );
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   const total = habits.length;

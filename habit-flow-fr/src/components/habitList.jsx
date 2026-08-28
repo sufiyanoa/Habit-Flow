@@ -3,10 +3,10 @@ import HabitCard from "./habitCard";
 const HabitList = ({ habits, deleteBtn, completedToggle }) => {
   return (
     <div>
-      {habits.map((habit, ind) => (
+      {habits.map((habit) => (
         <HabitCard
           habit={habit}
-          key={ind}
+          key={habit._id}
           deleteBtn={deleteBtn}
           completedToggle={completedToggle}
         />
