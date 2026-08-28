@@ -11,7 +11,9 @@ function App() {
   useEffect(() => {
     async function loadHabits() {
       try {
-        const response = await fetch("http://localhost:5000/api/habits");
+        const response = await fetch(
+          "https://habit-flow-sfp2.onrender.com/api/habits",
+        );
         if (!response.ok) throw new Error("Failed to fetch habits");
 
         const data = await response.json();
@@ -34,16 +36,18 @@ function App() {
     if (!habit) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/habits/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `https://habit-flow-sfp2.onrender.com/api/habits/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            completed: !habit.completed,
+          }),
         },
-        body: JSON.stringify({
-          completed: !habit.completed,
-        }),
-      });
-      if (!response.ok) throw new Error("Failed to update habit");
+      );
 
       const data = await response.json();
 
@@ -57,9 +61,12 @@ function App() {
 
   async function deleteBtn(id) {
     try {
-      const response = await fetch(`http://localhost:5000/api/habits/${id}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `https://habit-flow-sfp2.onrender.com/api/habits/${id}`,
+        {
+          method: "DELETE",
+        },
+      );
 
       if (!response.ok) throw new Error("Failed to delete habit");
 
