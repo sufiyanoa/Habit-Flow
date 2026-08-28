@@ -2,6 +2,8 @@ import { useState } from "react";
 
 const HabitForm = ({ addHabit }) => {
   const [input, setInput] = useState("");
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -9,24 +11,35 @@ const HabitForm = ({ addHabit }) => {
 
     if (!title) return;
 
+    setError("");
+    setIsSubmitting(true);
+
     try {
-      const response = await fetch("http://localhost:5000/api/habits", {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
+      const response = await fetch(
+        "https://habit-flow-sfp2.onrender.com/api/habits",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title,
+          }),
         },
-        body: JSON.stringify({
-          title,
-        }),
-      });
+      );
       if (!response.ok) throw new Error("Failed to create habit");
 
       const data = await response.json();
 
+      if (!data.habit) throw new Error("Invalid response from server");
+
       addHabit(data.habit);
       setInput("");
     } catch (error) {
-      console.log(error);
+      setError("Habit add nahi ho saki. Dobara try karein.");
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -38,13 +51,16 @@ const HabitForm = ({ addHabit }) => {
         id="title"
         value={input}
         onChange={(e) => setInput(e.target.value)}
+        disabled={isSubmitting}
       />
       <button
         className="border  p-1 rounded ml-3 my-3 bg-blue-400"
         type="submit"
+        disabled={isSubmitting}
       >
-        Add Habit
+        {isSubmitting ? "Adding..." : "Add Habit"}
       </button>
+      {error && <p className="text-red-600">{error}</p>}
     </form>
   );
 };
